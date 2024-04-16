@@ -3,7 +3,7 @@
 const cityInput = document.getElementById('cityInput'); // Input pour saisir le nom de la ville
 const citySelect = document.getElementById('citySelect'); // Sélecteur pour les suggestions de villes
 const resultDiv = document.getElementById('result'); // Division pour afficher les résultats de la météo
-
+citySelect.style.display = 'none';
 // Fonction pour rechercher une ville
 function searchCity() {
     // Récupération de la valeur saisie dans l'input en supprimant les espaces en début et en fin
@@ -42,6 +42,7 @@ function searchCity() {
 
 // Fonction pour afficher les suggestions de villes
 function showSuggestions() {
+    
     // Récupération de la valeur saisie dans l'input en supprimant les espaces en début et en fin, et en convertissant en minuscules
     const input = cityInput.value.trim().toLowerCase();
     const suggestions = [];
@@ -68,6 +69,7 @@ function showSuggestions() {
 
 // Fonction pour afficher les suggestions dans le sélecteur
 function renderSuggestions(suggestions) {
+   
     citySelect.innerHTML = ''; // Vide le sélecteur
     suggestions.forEach(suggestion => {
         const option = document.createElement('option'); // Création d'une nouvelle option
@@ -79,7 +81,7 @@ function renderSuggestions(suggestions) {
 
 // Fonction pour obtenir la météo d'une ville
 function getWeather(city, iso2) {
-    const apiKey = 'votre clé APi'; // Clé API pour accéder aux données météo
+    const apiKey = '2333fa9e49aade835728c0c3745e132a'; // Clé API pour accéder aux données météo
     const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city},${iso2}&appid=${apiKey}`; // URL de l'API météo
     fetch(apiUrl)
         .then(response => response.json())
@@ -113,6 +115,7 @@ function getWeather(city, iso2) {
 
 // Écouteur d'événement pour détecter les changements dans l'input de saisie
 cityInput.addEventListener('input', () => {
+    citySelect.style.display = 'block';
     showSuggestions(); // Affiche les suggestions lorsque l'utilisateur saisit quelque chose
 });
 
@@ -123,5 +126,5 @@ citySelect.addEventListener('change', () => {
     const selectedIso2 = selectedOption.getAttribute('data-iso2'); // Code ISO du pays correspondant à la ville sélectionnée
     getWeather(selectedCity, selectedIso2); // Obtient la météo de la ville sélectionnée
     cityInput.value = selectedCity; // Remplit l'input avec le nom de la ville sélectionnée
-    citySelect.innerHTML = ''; // Vide le sélecteur de suggestions
+    citySelect.style.display = 'none'; // Vide le sélecteur de suggestions
 });
