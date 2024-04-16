@@ -1,48 +1,35 @@
+// Sélection des éléments du DOM
+//2333fa9e49aade835728c0c3745e132a//
+const cityInput = document.getElementById('cityInput'); // Input pour saisir le nom de la ville
+const citySelect = document.getElementById('citySelect'); // Sélecteur pour les suggestions de villes
+const resultDiv = document.getElementById('result'); // Division pour afficher les résultats de la météo
 
-// let MySelectInput = document.getElementById('City')
-// fetch('https://countriesnow.space/api/v0.1/countries')
-//   .then(response => response.json())
-//   .then(data => {
-//     data.data.forEach(country => {
-//       country.cities.forEach(city => {
-//         let MonSelect = document.createElement('option')
-//         MonSelect.value = country.iso2
-//         MonSelect.innerHTML = city
-//         MySelectInput.appendChild(MonSelect)
-//       });
-//     });
-//   })
-//   .catch(error => console.error('Erreur lors de la récupération des données:', error));
-//   console.log(process.env.API_KEY)
-// // https://api.openweathermap.org/data/2.5/weather?q=Kaboul,AF&appid=2333fa9e49aade835728c0c3745e132a
-// // 2333fa9e49aade835728c0c3745e132a
-
-
-
-const cityInput = document.getElementById('cityInput');
-const citySelect = document.getElementById('citySelect');
-const resultDiv = document.getElementById('result');
-
+// Fonction pour rechercher une ville
 function searchCity() {
+    // Récupération de la valeur saisie dans l'input en supprimant les espaces en début et en fin
     const input = cityInput.value.trim();
+    // Vérification si l'input est vide
     if (input === '') {
         alert('Veuillez entrer le nom d\'une ville');
         return;
     }
 
+    // Appel à l'API pour obtenir la liste des pays et des villes
     fetch('https://countriesnow.space/api/v0.1/countries')
         .then(response => response.json())
         .then(data => {
             const countries = data.data;
             let cityFound = false;
+            // Parcours de chaque pays et de ses villes pour trouver la ville saisie
             countries.forEach(country => {
                 country.cities.forEach(city => {
                     if (city === input) {
                         cityFound = true;
-                        getWeather(city, country.iso2);
+                        getWeather(city, country.iso2); // Appel à la fonction pour obtenir la météo de la ville trouvée
                     }
                 });
             });
+            // Si la ville n'est pas trouvée, affiche un message d'erreur
             if (!cityFound) {
                 resultDiv.innerHTML = `La ville ${input} n'a pas été trouvée.`;
             }
@@ -53,44 +40,51 @@ function searchCity() {
         });
 }
 
+// Fonction pour afficher les suggestions de villes
 function showSuggestions() {
+    // Récupération de la valeur saisie dans l'input en supprimant les espaces en début et en fin, et en convertissant en minuscules
     const input = cityInput.value.trim().toLowerCase();
     const suggestions = [];
+    // Appel à l'API pour obtenir la liste des pays et des villes
     fetch('https://countriesnow.space/api/v0.1/countries')
         .then(response => response.json())
         .then(data => {
             const countries = data.data;
+            // Parcours de chaque pays et de ses villes pour trouver les suggestions correspondant à la saisie
             countries.forEach(country => {
                 country.cities.forEach(city => {
                     if (city.toLowerCase().startsWith(input)) {
-                        suggestions.push({ city, iso2: country.iso2 });
+                        suggestions.push({ city, iso2: country.iso2 }); // Ajout de la suggestion à la liste
                     }
                 });
             });
-            renderSuggestions(suggestions);
+            renderSuggestions(suggestions); // Affichage des suggestions
         })
         .catch(error => {
             console.error('Erreur lors de la recherche des suggestions de villes:', error);
-            citySelect.innerHTML = '';
+            citySelect.innerHTML = ''; // Vide le sélecteur en cas d'erreur
         });
 }
 
+// Fonction pour afficher les suggestions dans le sélecteur
 function renderSuggestions(suggestions) {
-    citySelect.innerHTML = '';
+    citySelect.innerHTML = ''; // Vide le sélecteur
     suggestions.forEach(suggestion => {
-        const option = document.createElement('option');
-        option.textContent = suggestion.city;
-        option.setAttribute('data-iso2', suggestion.iso2);
-        citySelect.appendChild(option);
+        const option = document.createElement('option'); // Création d'une nouvelle option
+        option.textContent = suggestion.city; // Définition du texte de l'option
+        option.setAttribute('data-iso2', suggestion.iso2); // Ajout de l'attribut data-iso2 pour stocker le code ISO du pays
+        citySelect.appendChild(option); // Ajout de l'option au sélecteur
     });
 }
 
+// Fonction pour obtenir la météo d'une ville
 function getWeather(city, iso2) {
-    const apiKey = 'votre clé APi ';
-    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city},${iso2}&appid=${apiKey}`;
+    const apiKey = 'votre clé APi'; // Clé API pour accéder aux données météo
+    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city},${iso2}&appid=${apiKey}`; // URL de l'API météo
     fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
+            // Affichage des données météo dans la division de résultat
             resultDiv.innerHTML = `
                 <h2>Météo pour ${city}, ${iso2}</h2>
                 <p>Température: ${data.main.temp} K</p>
@@ -101,17 +95,13 @@ function getWeather(city, iso2) {
                 <p>humidity: ${data.main.humidity} </p>
                 <p>sea_level: ${data.main.sea_level} </p>
                 <p>grnd_level: ${data.main.grnd_level} </p>
-
                 <p>visibility: ${data.visibility} </p>
                 <p>wind speed : ${data.wind.speed} </p>
                 <p>wind deg : ${data.wind.deg} </p>
                 <p>wind gust : ${data.wind.gust} </p>
-                <p>sunrise : ${data.sys.sunrise} </p>
-                <p>sunset : ${data.sys.sunset} </p>
-
-
+                <p>sunrise : ${ new Date(data.sys.sunrise * 1000)} </p>
+                <p>sunset : ${ new Date(data.sys.sunset * 1000)} </p>
                 <p>Description: ${data.weather[0].description}</p>
-
                 <p>Longitude : ${data.coord.lon} - Longitude : ${data.coord.lat}</p>
             `;
         })
@@ -121,15 +111,17 @@ function getWeather(city, iso2) {
         });
 }
 
+// Écouteur d'événement pour détecter les changements dans l'input de saisie
 cityInput.addEventListener('input', () => {
-    showSuggestions();
+    showSuggestions(); // Affiche les suggestions lorsque l'utilisateur saisit quelque chose
 });
 
+// Écouteur d'événement pour détecter les changements dans le sélecteur de suggestions
 citySelect.addEventListener('change', () => {
-    const selectedOption = citySelect.options[citySelect.selectedIndex];
-    const selectedCity = selectedOption.textContent;
-    const selectedIso2 = selectedOption.getAttribute('data-iso2');
-    getWeather(selectedCity, selectedIso2);
-    cityInput.value = selectedCity;
-    citySelect.innerHTML = '';
+    const selectedOption = citySelect.options[citySelect.selectedIndex]; // Option sélectionnée dans le sélecteur
+    const selectedCity = selectedOption.textContent; // Nom de la ville sélectionnée
+    const selectedIso2 = selectedOption.getAttribute('data-iso2'); // Code ISO du pays correspondant à la ville sélectionnée
+    getWeather(selectedCity, selectedIso2); // Obtient la météo de la ville sélectionnée
+    cityInput.value = selectedCity; // Remplit l'input avec le nom de la ville sélectionnée
+    citySelect.innerHTML = ''; // Vide le sélecteur de suggestions
 });
