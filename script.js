@@ -81,7 +81,7 @@ function renderSuggestions(suggestions) {
 
 // Fonction pour obtenir la météo d'une ville
 function getWeather(city, iso2) {
-    const apiKey = '2333fa9e49aade835728c0c3745e132a'; // Clé API pour accéder aux données météo
+    const apiKey = 'votre clé api openweathermap '; // Clé API pour accéder aux données météo
     const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city},${iso2}&appid=${apiKey}`; // URL de l'API météo
     fetch(apiUrl)
         .then(response => response.json())
